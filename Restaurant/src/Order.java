@@ -2,7 +2,11 @@ import java.io.*;
 
 public class Order extends Menu{
 	int orderCount;
-
+	
+	Order(){
+		super(null, 0);
+		orderCount=0;
+	}
 	Order(String menuName, int price) {
 		super(menuName, price);
 		orderCount =0;
@@ -48,4 +52,10 @@ public class Order extends Menu{
 	public String toString() {
 		return menuName + " : " + price + " / " +orderCount;
 	}	
+	
+	public void readOrder(DataInputStream dInputStream) throws IOException{
+		this.menuName=dInputStream.readUTF();
+		this.price=dInputStream.readInt();
+		this.orderCount=dInputStream.readInt();
+	}
 }

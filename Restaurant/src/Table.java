@@ -1,27 +1,25 @@
 import java.io.*;
+import java.util.*;
 
 // Table 클래스
 public class Table {
 	private String tableName;	// 테이블 번호 변수
 	private int member=0;	// 수용 가능 인원 변수
-	private boolean available = true;	// 테이블 이용 가능 여부 변수
-	private Order[] orders = new Order[100];	// 주문 내역 리스트 변수
-	private int orderLast = 0;	// orders 리스트에서 주문이 채워진 마지막 인덱스의 다음 인덱스를 확인하기 위한 변수
+	private boolean available = true;	// 테이블 이용 가능 여부 변수	
+	private ArrayList<Order> orders=new ArrayList<Order>();// 주문 내역 리스트 변수
+	//private int orderLast = 0;	// orders 리스트에서 주문이 채워진 마지막 인덱스의 다음 인덱스를 확인하기 위한 변수
 	
 	//테이블 데이터 복구 생성자
 	public Table (DataInputStream dInputStream) throws IOException {
 		this.tableName=dInputStream.readUTF();
 		this.member=dInputStream.readInt();
 		this.available=dInputStream.readBoolean();
-		this.orderLast=dInputStream.readInt();
+		int orderLast=dInputStream.readInt();
 		//주문 메뉴 정보 읽기
 		for(int i=0;i<orderLast;i++) {
-			String menuName=dInputStream.readUTF();
-			int price=dInputStream.readInt();
-			int orderCount=dInputStream.readInt();
-			Order order=new Order(menuName,price);
-			order.setOrderCount(orderCount);
-			orders[i]=order;
+			Order order=new Order();
+			order.readOrder(dInputStream);
+			orders.add(order);
 		}
 	}
 	
@@ -54,7 +52,7 @@ public class Table {
 	
 	// orderLast 접근자
 	int getOrderLast() {
-		return orderLast;
+		return orders.size();
 	}
 		
 	// 테이블명 설정자
@@ -74,21 +72,23 @@ public class Table {
 			
 	// 주문 추가 함수
 	void addOrder(Order order, int n){
+		
 		int search = searchOrder(order);
 		// 이전에 주문했던 메뉴가 아닐 경우
 		if(search == -1) {
-			orders[orderLast] = order;	// orderLast 인덱스에 새로운 주문을 추가합니다.
-			search = orderLast;	// search 값을 order 객체가 들어간 인덱스 값으로 바꿉니다.
-			orderLast++;	// orderLast에 1을 더하여 마지막으로 채워진 인덱스의 다음 인덱스를 가리키도록 합니다.
+			orders.add(order);
+			search=orders.size()-1;// 새로운 주문을 추가합니다.	
 		}
-		orders[search].addOrderCount(n);	// 주문한 해당 메뉴의 주문량을 n 증가합니다.
+		orders.get(search).addOrderCount(n);	// 주문한 해당 메뉴의 주문량을 n 증가합니다.
 	}
 	
 	// 메뉴 객체 탐색
 	public int searchOrder(Order target) {
-	    for (int i = 0; i < orderLast; i++) {
+		if(orders.isEmpty()) return -1; //처음 주문일 경우
+		
+	    for (int i = 0; i < orders.size(); i++) {
 	    	// i번째 인덱스의 객체와 찾으려는 order가 같은 경우
-	        if (orders[i].equals(target)) {	
+	        if (orders.get(i).equals(target)) {	
 	            return i;  // 해당 인덱스 반환
 	        }
 	    }
@@ -110,20 +110,20 @@ public class Table {
 	int outTable() {
 		int paid = getTotal();	// paid 변수에 total 값을 대입(total은 0으로 초기화할 것이기 때문에)
 		available = true;	// 이용 가능으로 변경	 
-		orderLast = 0;	// orderLast를 0으로 변경
+		orders.clear();	// orderLast를 0으로 변경
 		return paid;
 	}
 	
 	// 주문 내역을 보여주는 함수
-	Order[] getOrders() {
+	ArrayList<Order> getOrders() {
 		return orders;
 	}
 	
 	// total 접근자
 	int getTotal() {
 		int total = 0;
-		for (int i=0; i < orderLast; i++) {
-			total += orders[i].getOrderPay();
+		for (int i=0; i < orders.size(); i++) {
+			total += orders.get(i).getOrderPay();
 		}
 		return total;
 	}
@@ -150,12 +150,12 @@ public class Table {
 			dStream.writeUTF(this.tableName);
 			dStream.writeInt(this.member);
 			dStream.writeBoolean(this.available);
-			dStream.writeInt(this.orderLast);
+			dStream.writeInt(orders.size());
 			//주문 내역 리스트 저장 
-			for(int i=0;i<orderLast;i++) {
-				dStream.writeUTF(orders[i].menuName);
-				dStream.writeInt(orders[i].price);
-				dStream.writeInt(orders[i].orderCount);
+			for(int i=0;i<orders.size();i++) {
+				dStream.writeUTF(orders.get(i).menuName);
+				dStream.writeInt(orders.get(i).price);
+				dStream.writeInt(orders.get(i).orderCount);
 			}
 		}catch(Exception e) {
 			e.printStackTrace();

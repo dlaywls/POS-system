@@ -4,7 +4,7 @@ public class User {
 	public static void main(String args[]){
 		Scanner input = new Scanner(System.in);	// 스캐너 객체 호출
 		Restaurant bab = new Restaurant();	// 식당 객체 생성하고 참조 변수가 가리키게 함.
-		
+		String firstOrNot="y";
 		//데이터 복구
 		try {
 			FileInputStream fInputStream = new FileInputStream("restaurant.dat");
@@ -15,15 +15,19 @@ public class User {
 			dInputStream.close();
 				
 		} catch(FileNotFoundException e) {
-			System.out.println("파일이 없습니다.");
+			System.out.println("파일이 없습니다. 파일을 새로 만드시겠습니까?(y/n)");
+			firstOrNot=input.next();
+			if(firstOrNot.equals("n")) {
+				System.out.println("파일이 없습니다.");
+			}
 		}catch (Exception e) {
-			e.printStackTrace();
-		} 
+			System.out.println("파일 읽기 에러가 발생했습니다.");
+		}  
 		
 		// while문을 통한 반복
-		while(true) {
-			Table[] tables = bab.getTables();
-			Menu[] menus = bab.getMenus();
+		while(firstOrNot.equals("y")) {
+			ArrayList<Table> tables = bab.getTables();
+			ArrayList<Menu> menus = bab.getMenus();
 			System.out.println("무엇을 하시겠습니까?(선택지 번호로 입력해주세요.)");
 			System.out.println("1.주문 관리, 2.메뉴 관리, 3.테이블 관리, 4.종료, 5.정보 저장");
 			int what = input.nextInt();
@@ -39,30 +43,26 @@ public class User {
 					table(bab);
 					System.out.println("어느 테이블입니까?");
 					int table = input.nextInt();
-					tables[table].inTable();
+					tables.get(table).inTable();
 					menu(bab); 
 					System.out.println("주문하실 메뉴를 선택해주세요.");
 					int order = input.nextInt();
 					System.out.println("몇 개 주문하시겠습니까?");
 					int orderN = input.nextInt();	
-					Order ord = bab.menuToOrder(menus[order]);
-					try {
-						tables[table].addOrder(ord, orderN);
-					} catch (ArrayIndexOutOfBoundsException aiobe) {
-						System.out.println("orders[] is full."); 
-					}	
+					Order ord = bab.menuToOrder(menus.get(order));
+					tables.get(table).addOrder(ord, orderN);
 				}
 				else if (what1==2) {
 					table(bab);
 					System.out.println("어느 테이블입니까?");
 					int table = input.nextInt();
-					order(tables[table]);
+					order(tables.get(table));
 				}
 				else if (what1==3) {
 					table(bab);
 					System.out.println("어느 테이블입니까?");
 					int table = input.nextInt();
-					int paid = bab.pay(tables[table]);
+					int paid = bab.pay(tables.get(table));
 					System.out.println(paid+"가 결제 되었습니다.");
 				}
 				break;
@@ -78,10 +78,8 @@ public class User {
 					try {
 						bab.addMenu(new Menu(menuName, menuPrice));	// 메뉴 객체 생성 후 식당 메뉴에 추가
 						System.out.println("\'"+menuName+"\'"+"(이/가) 추가되었습니다.");
-						Menu[] menu=bab.getMenus();
+						ArrayList<Menu> menu=bab.getMenus();
 						
-					} catch (ArrayIndexOutOfBoundsException aiobe) {
-						System.out.println("menus[] is full."); 
 					} catch (Exception e) {	
 						System.out.println(e.getMessage());
 					}
@@ -112,8 +110,6 @@ public class User {
 					try {
 						bab.addTable(new Table(tableName, member, available));	// 테이블 객체 생성 후 식당 테이블에 추가
 						System.out.println(tableName+" 테이블이 추가되었습니다.");
-					} catch (ArrayIndexOutOfBoundsException aiobe) {
-						System.out.println("tables[] is full."); 
 					} catch (Exception e) {	
 						System.out.println(e.getMessage());
 					}
@@ -159,12 +155,12 @@ public class User {
 	
 	// menu판 함수
 	public static void menu(Restaurant r) {
-		Menu[] menus= r.getMenus();
+		ArrayList<Menu> menus= r.getMenus();
 		String menu = "----------메뉴판----------\n";
 		//반복문을 사용해 식당의 메뉴를 menu 변수에 추가
 		for(int i=0; i<r.getMenuLast(); i++) {
-			if (menus[i] != null) {
-				menu += i +". "+ menus[i]+"원";
+			if (menus.get(i) != null) {
+				menu += i +". "+ menus.get(i)+"원";
 			}
 			else {
 				break;
@@ -176,12 +172,12 @@ public class User {
 	
 	// table 나열 함수
 	public static void table(Restaurant r) {
-		Table[] tables= r.getTables();
+		ArrayList<Table> tables= r.getTables();
 		String table = "----------테이블----------\n";
 		//반복문을 사용해 식당의 메뉴를 table 변수에 추가
 		for(int i=0; i<r.getTableLast(); i++) {
-			if (tables[i] != null) {
-				table += i +". "+ tables[i];
+			if (tables.get(i) != null) {
+				table += i +". "+ tables.get(i);
 			}
 			else {
 				break;
@@ -193,12 +189,12 @@ public class User {
 	
 	// table 나열 함수
 	public static void order(Table t) {
-		Order[] orders= t.getOrders();
+		ArrayList<Order> orders= t.getOrders();
 		String order = "----------주문내역----------\n";
 		//반복문을 사용해 식당의 메뉴를 table 변수에 추가
 		for(int i=0; i<t.getOrderLast(); i++) {
-			if (orders[i] != null) {
-				order += i +". "+ orders[i]+"개";
+			if (orders.get(i) != null) {
+				order += i +". "+ orders.get(i)+"개";
 				}
 			else {
 				break;
