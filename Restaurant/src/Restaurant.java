@@ -60,8 +60,9 @@ public class Restaurant{
 	}
 	
 	// 메뉴 객체 추가
-	public void addMenu(Menu m) throws Exception {
+	public void addMenu(String menuName, int menuPrice) throws Exception {
 		// 추가하려는 메뉴가 원래 없던 메뉴일 경우
+		Menu m=new Menu(menuName, menuPrice);
 		if (searchMenu(m)==-1) {
 			menus.add( m);	// 메뉴 추가
 		}
@@ -72,7 +73,8 @@ public class Restaurant{
 	}
 	
 	// 테이블 객체 추가
-	public void addTable(Table t) throws Exception {
+	public void addTable(String tableName, int member, boolean available) throws Exception {
+		Table t= new Table(tableName, member, available);
 		// 추가하려는 테이블이 원래 없던 테이블일 경우
 		if (searchTable(t)==-1) {
 			tables.add(t);	// tables에서 비어있는 첫번째 인덱스에 메뉴 추가
@@ -88,7 +90,8 @@ public class Restaurant{
 	}
  	
 	// 메뉴 객체 삭제
-	public int deleteMenu(Menu m) throws Exception{
+	public int deleteMenu(String menuName) throws Exception{
+		Menu m= new Menu(menuName);
 		int j = searchMenu(m);	// 삭제하려는 메뉴가 있는지 확인
 		// 삭제하려는 메뉴가 있는 경우
 		if (j != -1) {
@@ -102,7 +105,8 @@ public class Restaurant{
 	}
 
 	// 테이블 객체 삭제
-	public int deleteTable(Table t) throws Exception {
+	public int deleteTable(String tableName) throws Exception {
+		Table t=new Table(tableName);
 		int j = searchTable(t);	// 삭제하려는 테이블이 있는지 확인
 		// 삭제하려는 메뉴가 있는 경우
 		if (j != -1) {
@@ -117,17 +121,63 @@ public class Restaurant{
 		}
 	}
 	
-	public Order menuToOrder(Menu m) {
+	public void menuToOrder(int orderMenuN, int tableN, int qauntity) {
 		Order ord;
-		ord = new Order(m.menuName, m.price);
-		return ord;
+		Table table= tables.get(tableN);
+		Menu orderedMenu=menus.get(orderMenuN);
+		ord = new Order(orderedMenu.menuName, orderedMenu.price);
+		table.addOrder(ord, qauntity);
+		
 	}
 	
 	// 계산
-	public int pay(Table t) {
+	public int pay(int table) {
+		Table t=tables.get(table);
 		int paid = t.outTable();
 		addAmount(paid);
 		return paid;
+	}
+	
+	// 테이블에 손님이 들어온 경우
+	int inTable(int tableN) {
+		return tables.get(tableN).inTable();
+	}
+	
+	//메뉴 정보 출력
+	public String printMenu() {
+		String menu = "----------메뉴판----------\n";
+		//반복문을 사용해 식당의 메뉴를 menu 변수에 추가
+		for(int i=0; i<menus.size(); i++) {
+			if (menus.get(i) != null) {
+				menu += i +". "+ menus.get(i)+"원";
+			}
+			else {
+				break;
+			}
+			menu += "\n";
+		}
+		return menu;
+	}
+	
+	//테이블 정보 출력
+	public String printTable() {
+		String table = "----------테이블----------\n";
+		//반복문을 사용해 식당의 메뉴를 table 변수에 추가
+		for(int i=0; i<tables.size(); i++) {
+			if (tables.get(i) != null) {
+				table += i +". "+ tables.get(i);
+			}
+			else {
+				break;
+			}
+			table += "\n";
+		}
+		return table;
+	}
+	
+	//주문 정보 출력
+	public String printOrder(int tableN) {
+		return tables.get(tableN).printOrder();
 	}
 	
 	//데이터 저장

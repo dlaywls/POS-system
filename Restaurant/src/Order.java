@@ -58,4 +58,10 @@ public class Order extends Menu{
 		this.price=dInputStream.readInt();
 		this.orderCount=dInputStream.readInt();
 	}
+	
+	public void saveOrder(DataOutputStream dStream) throws IOException {
+		dStream.writeUTF(this.menuName);
+		dStream.writeInt(this.price);
+		dStream.writeInt(this.orderCount);
+	}
 }

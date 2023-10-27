@@ -7,7 +7,6 @@ public class Table {
 	private int member=0;	// 수용 가능 인원 변수
 	private boolean available = true;	// 테이블 이용 가능 여부 변수	
 	private ArrayList<Order> orders=new ArrayList<Order>();// 주문 내역 리스트 변수
-	//private int orderLast = 0;	// orders 리스트에서 주문이 채워진 마지막 인덱스의 다음 인덱스를 확인하기 위한 변수
 	
 	//테이블 데이터 복구 생성자
 	public Table (DataInputStream dInputStream) throws IOException {
@@ -110,7 +109,7 @@ public class Table {
 	int outTable() {
 		int paid = getTotal();	// paid 변수에 total 값을 대입(total은 0으로 초기화할 것이기 때문에)
 		available = true;	// 이용 가능으로 변경	 
-		orders.clear();	// orderLast를 0으로 변경
+		orders.clear();	// 주문내역 삭제
 		return paid;
 	}
 	
@@ -143,6 +142,23 @@ public class Table {
 		return tableName+"("+member+"): " + available;
 	}
 	
+	public String printOrder() {
+		String order = "----------주문내역----------\n";
+		//반복문을 사용해 식당의 메뉴를 table 변수에 추가
+		for(int i=0; i<orders.size(); i++) {
+			if (orders.get(i) != null) {
+				order += i +". "+ orders.get(i)+"개";
+				}
+			else {
+				break;
+			}
+			order += "\n";
+		}
+		order += "------------------------\n";
+		order += "주문금액: " + getTotal();
+		return order;
+	}
+	
 	
 	//테이블 저장
 	public void saveTables(DataOutputStream dStream) {
@@ -153,10 +169,9 @@ public class Table {
 			dStream.writeInt(orders.size());
 			//주문 내역 리스트 저장 
 			for(int i=0;i<orders.size();i++) {
-				dStream.writeUTF(orders.get(i).menuName);
-				dStream.writeInt(orders.get(i).price);
-				dStream.writeInt(orders.get(i).orderCount);
+				orders.get(i).saveOrder(dStream);
 			}
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
