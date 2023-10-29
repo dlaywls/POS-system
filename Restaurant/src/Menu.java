@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 // Menu 클래스
-public class Menu{
+public class Menu implements Serializable{
 	protected String menuName = "";	// 메뉴명 변수
 	protected int price = 0;	// 메뉴 가격 변수
 	

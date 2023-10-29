@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class Order extends Menu{
+public class Order extends Menu implements Serializable{
 	int orderCount;
 	
 	Order(){

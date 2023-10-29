@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 // Restaurant 클래스(super)
-public class Restaurant{
+public class Restaurant implements Serializable{
 	// Menu 객체들로 이루어진 리스트
 	protected ArrayList<Menu> menus;
 	// Table 객체들로 이루어진 리스트
@@ -181,7 +181,8 @@ public class Restaurant{
 	}
 	
 	//데이터 저장
-	public void saveData(DataOutputStream dStream) {
+	public void saveData(DataOutputStream  dStream) {
+		
 		try {
 			//메뉴 데이터 저장
 			dStream.writeInt(menus.size());
@@ -203,7 +204,8 @@ public class Restaurant{
 	}
 	
 	//데이터 복구
-	public void loadData(DataInputStream dInputStream) throws Exception {
+	public void  loadData(DataInputStream  dInputStream) throws Exception {
+		
 		int menuLast = 0;
 		int tableLast = 0;
 	    try {

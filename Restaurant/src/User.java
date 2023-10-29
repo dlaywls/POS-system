@@ -1,23 +1,24 @@
 import java.io.*;
 import java.util.*;
-public class User {
+public class User implements Serializable{
 	public static void main(String args[]){
 		Scanner input = new Scanner(System.in);	// 스캐너 객체 호출
-		Restaurant bab = new Restaurant();	// 식당 객체 생성하고 참조 변수가 가리키게 함.
+		Restaurant bab =null;	// 식당 객체 생성하고 참조 변수가 가리키게 함.
 		String firstOrNot="y";
 		
 		//데이터 복구
 		try {
 			FileInputStream fInputStream = new FileInputStream("restaurant.dat");
-			DataInputStream dInputStream = new DataInputStream(fInputStream);
+			ObjectInputStream  in = new ObjectInputStream (fInputStream);
 			
-			bab.loadData(dInputStream);
+			bab=(Restaurant) in.readObject();
 			fInputStream.close();
-			dInputStream.close();
+			in.close();
 				
 		} catch(FileNotFoundException e) {
 			System.out.println("파일이 없습니다. 파일을 새로 만드시겠습니까?[y/n]");
 			firstOrNot=input.next();
+			bab=new Restaurant();
 			if(firstOrNot.equals("n")) {
 				System.out.println("파일이 없습니다.");
 			}
@@ -27,6 +28,7 @@ public class User {
 		
 		// while문을 통한 반복
 		while(firstOrNot.equals("y")) {
+			
 			System.out.println("무엇을 하시겠습니까?(선택지 번호로 입력해주세요.)");
 			System.out.println("1.주문 관리, 2.메뉴 관리, 3.테이블 관리, 4.종료, 5.정보 저장");
 			int what = input.nextInt();
@@ -128,10 +130,10 @@ public class User {
 				FileOutputStream fStream=null;
 				try {
 					fStream=new FileOutputStream("restaurant.dat");
-					DataOutputStream dStream=new DataOutputStream(fStream); //파일 오픈
-					bab.saveData(dStream);// 데이터 저장
+					ObjectOutputStream  out=new ObjectOutputStream (fStream); //파일 오픈
+					out.writeObject(bab);// 데이터 저장
 					fStream.close();
-					dStream.close();
+					out.close();
 					System.out.println("저장되었습니다");
 				}catch(Exception e) {
 					e.printStackTrace();

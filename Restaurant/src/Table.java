@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.*;
 
 // Table 클래스
-public class Table {
+public class Table implements Serializable{
 	private String tableName;	// 테이블 번호 변수
 	private int member=0;	// 수용 가능 인원 변수
 	private boolean available = true;	// 테이블 이용 가능 여부 변수	
