@@ -176,4 +176,19 @@ public class Table implements Serializable{
 			e.printStackTrace();
 		}
 	}
+	
+	public void saveOrders(ObjectOutputStream out) {
+		try {
+			out.writeObject(orders);// 주문 메뉴 정보 저장
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void loadOrders(ObjectInputStream in) {
+		try {
+			orders=(ArrayList<Order>)in.readObject();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

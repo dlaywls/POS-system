@@ -3,7 +3,7 @@ import java.util.*;
 public class User implements Serializable{
 	public static void main(String args[]){
 		Scanner input = new Scanner(System.in);	// 스캐너 객체 호출
-		Restaurant bab =null;	// 식당 객체 생성하고 참조 변수가 가리키게 함.
+		Restaurant bab =new Restaurant();	// 식당 객체 생성하고 참조 변수가 가리키게 함.
 		String firstOrNot="y";
 		
 		//데이터 복구
@@ -11,14 +11,13 @@ public class User implements Serializable{
 			FileInputStream fInputStream = new FileInputStream("restaurant.dat");
 			ObjectInputStream  in = new ObjectInputStream (fInputStream);
 			
-			bab=(Restaurant) in.readObject();
+			bab.loadDataSerialize(in);
 			fInputStream.close();
 			in.close();
 				
 		} catch(FileNotFoundException e) {
 			System.out.println("파일이 없습니다. 파일을 새로 만드시겠습니까?[y/n]");
 			firstOrNot=input.next();
-			bab=new Restaurant();
 			if(firstOrNot.equals("n")) {
 				System.out.println("파일이 없습니다.");
 			}
@@ -131,8 +130,7 @@ public class User implements Serializable{
 				try {
 					fStream=new FileOutputStream("restaurant.dat");
 					ObjectOutputStream  out=new ObjectOutputStream (fStream); //파일 오픈
-					out.writeObject(bab);// 데이터 저장
-					fStream.close();
+					bab.saveDataSerialize(out);// 데이터 저장
 					out.close();
 					System.out.println("저장되었습니다");
 				}catch(Exception e) {

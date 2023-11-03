@@ -231,6 +231,37 @@ public class Restaurant implements Serializable{
 	    	e.printStackTrace();
 	    }
 	}
+	
+	public void saveDataSerialize(ObjectOutputStream out) {
+		try {
+			//메뉴 데이터 저장
+			out.writeObject(menus);
+			
+			//테이블 데이터 저장
+			out.writeObject(tables);
+			for(int i=0; i<tables.size();i++) {
+				tables.get(i).saveOrders(out);
+			}
+			
+			out.writeInt(amount);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	public void loadDataSerialize(ObjectInputStream in) {
+		try {
+			menus=(ArrayList<Menu>)in.readObject();
+			tables=(ArrayList<Table>) in.readObject();
+			for(int i=0;i<tables.size();i++) {
+				tables.get(i).loadOrders(in);
+			}
+			amount=in.readInt();
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
 	
 
