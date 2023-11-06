@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Menu implements Serializable{
 	protected String menuName = "";	// 메뉴명 변수
 	protected int price = 0;	// 메뉴 가격 변수
+	protected int n=0;
 	
 	//메뉴 생성자
 	public Menu(DataInputStream dInputStream) throws IOException{		
