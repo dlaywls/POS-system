@@ -1,35 +1,25 @@
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.SwingUtilities;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.*;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+
+import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import javax.swing.JScrollBar;
+
 
 public class UIMenuManage extends JPanel  {
 
-	private Restaurant res;
-	String deleteMenuName;
+	String deleteMenuName; //삭제할 메뉴의 이름
+	private JButton lastClickedButton; //마지막으로 누른 버튼 
 	
 	/**
 	 * Create the panel.
 	 */
 	public UIMenuManage(Restaurant res) {
-		this.res=res;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -51,22 +41,29 @@ public class UIMenuManage extends JPanel  {
         int menuSize=res.getMenuLast();
         ArrayList<Menu>menus=res.getMenus();
         
+        //메뉴의 개수만큼 반복해서 각 메뉴의 이름이 들어간 버튼 만들기
         for (int i=0; i < menuSize; i++) {
         	
             JButton button = new JButton(menus.get(i).menuName);
             button.setPreferredSize(new Dimension(180, 130));
             button.setFont(new Font("굴림", Font.PLAIN, 20));
+            button.setBackground(Color.white);
+            
             panel_2.add(button, gbc);
             
             final int menuIndex=i;
             
+            //버튼 눌렀을 때
             button.addActionListener(new ActionListener() {
             	
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    
-                    deleteMenuName=menus.get(menuIndex).menuName;
-                    
+                	if(lastClickedButton!=null) {  //마지막으로 누른 버튼이 있을 경우 마지막으로 누른 버튼의 색을 원래 색으로 바꿈
+                		lastClickedButton.setBackground(Color.white); 
+                	}
+                	lastClickedButton=button; 
+                	button.setBackground(new Color(0x8ECA97));  //버튼 색 바꾸기
+                    deleteMenuName=menus.get(menuIndex).menuName;  //삭제할 메뉴의 이름 가져오기
                 }
             });
 
@@ -83,36 +80,40 @@ public class UIMenuManage extends JPanel  {
 		add(panel_1);
 		panel_1.setLayout(new GridLayout(0, 1, 5, 5));
 		
+		//'메뉴 추가' 버튼
 		JButton btnNewButton_1 = new JButton("메뉴 추가");
 		btnNewButton_1.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel_1.add(btnNewButton_1);
 		btnNewButton_1.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	UIAddMenu addMenu=new UIAddMenu(res);
-            	showNext(addMenu);
+            	showNext(addMenu);  //메뉴 추가 패널로 이동
             }
         });
-		panel_1.add(btnNewButton_1);
 		
+		//'메뉴 삭제'버튼
 		JButton btnNewButton_3 = new JButton("메뉴 삭제");
 		btnNewButton_3.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel_1.add(btnNewButton_3);
 		btnNewButton_3.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	try {
-					res.deleteMenu(deleteMenuName);
-					UIMenuManage menuManager=new UIMenuManage(res);
-                    showNext(menuManager);
+					res.deleteMenu(deleteMenuName); //삭제할 메뉴의 이름으로 메뉴 삭제
+					UIMenuManage menuManager=new UIMenuManage(res); 
+                    showNext(menuManager);  //다시 메뉴 관리 화면 로드
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
             }
         });
-		panel_1.add(btnNewButton_3);
 		
+		//정보 저장 버튼
 		JButton btnNewButton_2 = new JButton("정보 저장");
 		btnNewButton_2.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel_1.add(btnNewButton_2);
 		btnNewButton_2.addActionListener( new ActionListener() {
 			@Override
             public void actionPerformed(ActionEvent e) {
@@ -123,40 +124,28 @@ public class UIMenuManage extends JPanel  {
 					ObjectOutputStream  out=new ObjectOutputStream (fStream); //파일 오픈
 					res.saveDataSerialize(out);// 데이터 저장
 					out.close();
-					System.out.println("저장되었습니다");
-					JFrame saveDataFrame = new JFrame("saveData");
-	                saveDataFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	                saveDataFrame.setSize(400, 200);
-
-	                JPanel saveDataPanel = new JPanel();
-	                JLabel lblNewLabel = new JLabel("정보가 저장되었습니다.");
-	        		lblNewLabel.setFont(new Font("굴림", Font.PLAIN, 24));
-	        		lblNewLabel.setBounds(92, 95, 272, 36);
-	        		saveDataPanel.add(lblNewLabel);
-
-	                saveDataFrame.add(saveDataPanel);
-
-	                saveDataFrame.setVisible(true);
+					UISaveData saveData=new UISaveData();
+					saveData.setVisible(true); //데이터 저장 확인 프레임 보여줌
 				}catch(Exception e1) {
 					e1.printStackTrace();
 				}
-                
             }
         });
-		panel_1.add(btnNewButton_2);
 		
+		//관리자 모드 화면 버튼
 		JButton btnNewButton = new JButton("관리자 모드 화면");
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel_1.add(btnNewButton);
 		btnNewButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	UIManager manager=new UIManager(res);
-            	showNext(manager);
+            	showNext(manager); //관리자 모드 패널로 이동
             }
         });
-		panel_1.add(btnNewButton);
-
 	}
+	
+	//다음 화면으로 이동하는 함수
 	private void showNext(Component ob) {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         frame.getContentPane().remove(this);

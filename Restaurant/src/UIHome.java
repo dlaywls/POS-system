@@ -54,11 +54,13 @@ public class UIHome extends JPanel implements Serializable{
 			in.close();
 						
 		} catch(FileNotFoundException e) {
+			//파일 에러 프레임 
 			JFrame fileErrorFrame = new JFrame("File error frame");
 	        fileErrorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	        fileErrorFrame.setSize(500, 400);
 	        fileErrorFrame.setLayout(new FlowLayout());
-
+	        
+	        //파일 에러 프레임에 파일 에러 다이얼로그 넣기
 	        JDialog modalDialog = new JDialog(fileErrorFrame, "File error Dialog", true); 
             modalDialog.setLayout(new BorderLayout());
 
@@ -66,7 +68,6 @@ public class UIHome extends JPanel implements Serializable{
             label.setFont(new Font("굴림", Font.PLAIN, 24));
             label.setHorizontalAlignment(JLabel.CENTER); 
             modalDialog.add(label, BorderLayout.CENTER);
-            
 
             JPanel buttonPanel = new JPanel();
             buttonPanel.setLayout(new FlowLayout());
@@ -78,6 +79,8 @@ public class UIHome extends JPanel implements Serializable{
 
             modalDialog.add(buttonPanel, BorderLayout.SOUTH);
             
+            
+           //'yesButton'버튼을 눌렀을 경우
             yesButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -85,6 +88,7 @@ public class UIHome extends JPanel implements Serializable{
                 }
             });
 
+            //'noButton'버튼을 눌렀을 경우
             noButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -92,13 +96,14 @@ public class UIHome extends JPanel implements Serializable{
                     modalDialog.setLayout(new BorderLayout());
                 	
                     UIProgramExit programExit = new UIProgramExit();
-                    modalDialog.add(programExit);
+                    modalDialog.add(programExit.contentPane);
                     
                     modalDialog.setSize(500, 380);
                     modalDialog.setVisible(true);
                 }
             });
             
+            //'x'버튼을 눌렀을 경우
             modalDialog.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
@@ -108,9 +113,6 @@ public class UIHome extends JPanel implements Serializable{
             
             modalDialog.setSize(500, 380);
             modalDialog.setVisible(true);
-
-	        
-					
 		}catch (Exception e) {
 			System.out.println("파일 읽기 에러가 발생했습니다.");
 		}
@@ -118,38 +120,43 @@ public class UIHome extends JPanel implements Serializable{
 		
 		setLayout(null);
 		
+		//'관리자 모드' 버튼
 		JButton btnNewButton = new JButton("관리자 모드");
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton.setBounds(137, 88, 303, 323);
+		add(btnNewButton);
 		btnNewButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	UIManager manager=new UIManager(res);
-            	showNext(manager);
+            	showNext(manager);  //'관리자 모드' 패널로 이동
             }
         });
-		add(btnNewButton);
 		
+		//'판매 모드' 버튼
 		JButton btnNewButton_1 = new JButton("판매모드");
 		btnNewButton_1.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton_1.setBounds(552, 88, 303, 323);
 		add(btnNewButton_1);
 		
+		//'종료' 버튼
 		JButton btnNewButton_2 = new JButton("종료");
 		btnNewButton_2.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton_2.setBounds(137, 488, 303, 76);
+		add(btnNewButton_2);
 		btnNewButton_2.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	UIProgramExit programExit=new UIProgramExit();
-            	showNext(programExit);
+            	programExit.setVisible(true); //'UIProgrmaExit'프레임 보여줌.
             }
         });
-		add(btnNewButton_2);
 		
+		//'정보 저장' 버튼
 		JButton btnNewButton_2_1 = new JButton("정보 저장");
 		btnNewButton_2_1.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton_2_1.setBounds(552, 488, 303, 76);
+		add(btnNewButton_2_1);
 		btnNewButton_2_1.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -159,41 +166,23 @@ public class UIHome extends JPanel implements Serializable{
 					ObjectOutputStream  out=new ObjectOutputStream (fStream); //파일 오픈
 					res.saveDataSerialize(out);// 데이터 저장
 					out.close();
-					System.out.println("저장되었습니다");
-					JFrame saveDataFrame = new JFrame("saveData");
-	                saveDataFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-	                saveDataFrame.setSize(400, 200);
-
-	                JPanel saveDataPanel = new JPanel();
-	                JLabel lblNewLabel = new JLabel("정보가 저장되었습니다.");
-	        		lblNewLabel.setFont(new Font("굴림", Font.PLAIN, 24));
-	        		lblNewLabel.setBounds(92, 95, 272, 36);
-	        		saveDataPanel.add(lblNewLabel);
-
-	                saveDataFrame.add(saveDataPanel);
-
-	                saveDataFrame.setVisible(true);
+					
+					UISaveData saveData=new UISaveData();
+					saveData.setVisible(true); //정보 저장 확인 프레임 보여주기.
 				}catch(Exception e1) {
 					e1.printStackTrace();
 				}
                 
             }
         });
-		add(btnNewButton_2_1);
-		
-		 
-
-	}
+		}
 	
+	//다음 패널로 이동하는 함수
 	private void showNext(Component ob) {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         frame.getContentPane().remove(this);
         frame.getContentPane().add(ob);
         frame.revalidate();
         frame.repaint();
-    }
-	
-	
-
-    
+    }  
 }

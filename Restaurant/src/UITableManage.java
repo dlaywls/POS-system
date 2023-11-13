@@ -1,5 +1,6 @@
 import javax.swing.JPanel;
 import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -24,13 +25,13 @@ import java.awt.GridBagLayout;
 import javax.swing.BoxLayout;
 
 public class UITableManage extends JPanel {
-	private Restaurant res;
-	String deleteTableName;
+	String deleteTableName; //삭제할 테이블의 이름
+	private JButton lastClickedButton;  //마지막으로 누른 버튼
 	/**
 	 * Create the panel.
 	 */
+	
 	public UITableManage(Restaurant res) {
-		this.res=res;
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -52,21 +53,29 @@ public class UITableManage extends JPanel {
         int tableSize=res.getTableLast();
         ArrayList<Table>tables=res.getTables();
         
+        //테이블의 개수만큼 반복해서 각 테이블의 이름과 수용가능 인원이 들어간 버튼 만들기
         for (int i=0; i < tableSize; i++) {
         	
-            JButton button = new JButton(tables.get(i).getTableName());
+            JButton button = new JButton("<html> <font size='5'>"+tables.get(i).getTableName()+"<br>"
+            		+ "<font size='3'>수용 가능 인원:"+ tables.get(i).getMember()+"</p></html>");
             button.setPreferredSize(new Dimension(180, 140));
-            button.setFont(new Font("굴림", Font.PLAIN, 20));
+            button.setFont(new Font("굴림", Font.PLAIN,15));
+            button.setBackground(Color.white);
             panel_2.add(button, gbc);
             
-            final int menuIndex=i;
+            final int tableIndex=i;
             
+            //버튼 눌렀을 때
             button.addActionListener(new ActionListener() {
             	
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    
-                	deleteTableName=tables.get(menuIndex).getTableName();
+                	if(lastClickedButton!=null) {  //마지막으로 누른 버튼이 있을 경우 
+                		lastClickedButton.setBackground(Color.white); 
+                	}
+                	lastClickedButton=button;
+                	button.setBackground(new Color(0x8ECA97));  //버튼의 색 바꾸기
+                	deleteTableName=tables.get(tableIndex).getTableName();  //삭제한 테이블의 이름 받아오기
                     
                 }
             });
@@ -86,8 +95,10 @@ public class UITableManage extends JPanel {
 		add(panel);
 		panel.setLayout(new GridLayout(0, 1, 5, 5));
 		
+		//테이블 추가 버튼
 		JButton btnNewButton_1 = new JButton("테이블 추가");
 		btnNewButton_1.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel.add(btnNewButton_1);
 		btnNewButton_1.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -95,10 +106,11 @@ public class UITableManage extends JPanel {
             	showNext(addTable);
             }
         });
-		panel.add(btnNewButton_1);
 		
+		//테이블 삭제 버튼
 		JButton btnNewButton_3 = new JButton("테이블 삭제");
 		btnNewButton_3.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel.add(btnNewButton_3);
 		btnNewButton_3.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -112,10 +124,11 @@ public class UITableManage extends JPanel {
 				}
             }
         });
-		panel.add(btnNewButton_3);
 		
+		//정보 저장 버튼
 		JButton btnNewButton_2 = new JButton("정보 저장");
 		btnNewButton_2.setFont(new Font("굴림", Font.PLAIN, 20));
+		panel.add(btnNewButton_2);
 		btnNewButton_2.addActionListener( new ActionListener() {
 			@Override
             public void actionPerformed(ActionEvent e) {
@@ -126,40 +139,29 @@ public class UITableManage extends JPanel {
 					ObjectOutputStream  out=new ObjectOutputStream (fStream); //파일 오픈
 					res.saveDataSerialize(out);// 데이터 저장
 					out.close();
-					System.out.println("저장되었습니다");
+					UISaveData saveData=new UISaveData();
+					saveData.setVisible(true);   //데이터 저장 확인 프레임 보여줌
 				}catch(Exception e1) {
 					e1.printStackTrace();
 				}
-                JFrame saveDataFrame = new JFrame("saveData");
-                saveDataFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                saveDataFrame.setSize(400, 200);
-
-                JPanel saveDataPanel = new JPanel();
-                JLabel lblNewLabel = new JLabel("정보가 저장되었습니다.");
-        		lblNewLabel.setFont(new Font("굴림", Font.PLAIN, 24));
-        		lblNewLabel.setBounds(92, 95, 272, 36);
-        		saveDataPanel.add(lblNewLabel);
-
-                saveDataFrame.add(saveDataPanel);
-
-                saveDataFrame.setVisible(true);
             }
         });
-		panel.add(btnNewButton_2);
 		
+		//관리자 모드 화면 버튼
 		JButton btnNewButton = new JButton("관리자 모드 화면");
 		btnNewButton.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton.addActionListener( new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
             	UIManager manager=new UIManager(res);
-            	showNext(manager);
+            	showNext(manager);  //관리자 모드 패널로 이동
             }
         });
 		panel.add(btnNewButton);
 
 	}
 	
+	//다음 화면으로 이동하는 함수
 	private void showNext(Component ob) {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         frame.getContentPane().remove(this);
