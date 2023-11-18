@@ -47,18 +47,20 @@ public class UIManager extends JPanel implements Serializable{
 		btnNewButton_2.setFont(new Font("굴림", Font.PLAIN, 24));
 		btnNewButton_2.setBounds(703, 144, 158, 326);
 		add(btnNewButton_2);
+		btnNewButton_2.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	UISaveDataConfirm saveDataConfirm=new UISaveDataConfirm(res);
+            	saveDataConfirm.setVisible(true);
+            	UIHome home = new UIHome();
+            	showNext(home);
+            }
+        });
 		
 		JLabel lblNewLabel = new JLabel("관리자 모드");
 		lblNewLabel.setFont(new Font("굴림", Font.PLAIN, 24));
 		lblNewLabel.setBounds(425, 58, 128, 44);
 		add(lblNewLabel);
-		btnNewButton_2.addActionListener( new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            	UIHome home = new UIHome();
-            	showNext(home); //첫 화면 패널로 이동
-            }
-        });
 	}
 	
 	

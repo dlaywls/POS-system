@@ -138,6 +138,13 @@ public class UIHome extends JPanel implements Serializable{
 		btnNewButton_1.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton_1.setBounds(552, 88, 303, 323);
 		add(btnNewButton_1);
+		btnNewButton_1.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	UISales sales=new UISales(res);
+            	showNext(sales);  //'판매 모드' 패널로 이동
+            }
+        });
 		
 		//'종료' 버튼
 		JButton btnNewButton_2 = new JButton("종료");

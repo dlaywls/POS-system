@@ -143,18 +143,18 @@ public class Table implements Serializable{
 	}
 	
 	public String printOrder() {
-		String order = "----------주문내역----------\n";
+		String order = "---주문내역---<br>";
 		//반복문을 사용해 식당의 메뉴를 table 변수에 추가
 		for(int i=0; i<orders.size(); i++) {
 			if (orders.get(i) != null) {
-				order += i +". "+ orders.get(i)+"개";
+				order += i +". "+orders.get(i).menuName+":"+ orders.get(i).orderCount+"개";
 				}
 			else {
 				break;
 			}
-			order += "\n";
+			order += "<br>";
 		}
-		order += "------------------------\n";
+		
 		order += "주문금액: " + getTotal();
 		return order;
 	}
