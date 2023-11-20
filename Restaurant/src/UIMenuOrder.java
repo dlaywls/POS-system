@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
@@ -25,6 +27,7 @@ import javax.swing.JTable;
 
 public class UIMenuOrder extends JPanel {
 	
+	private Restaurant res;
 	private DefaultTableModel tableModel;
 	private JTable orderTable;
 	private JButton lastClickedButton; //마지막으로 누른 버튼 
@@ -34,6 +37,7 @@ public class UIMenuOrder extends JPanel {
 	 * Create the panel.
 	 */
 	public UIMenuOrder(Restaurant res , int tableN) {
+		this.res=res;
 		
 		ArrayList<Table>tables=res.getTables();
 		Table selectedTable=tables.get(tableN);  //현재 선택된 테이블
@@ -50,7 +54,7 @@ public class UIMenuOrder extends JPanel {
 		orderTable = new JTable(tableModel); 
 		orderTable.setDefaultRenderer(Object.class, new CustomRenderer());
 		JScrollPane scrollPane = new JScrollPane(orderTable);
-        scrollPane.setBounds(15, 10, 300, 310);
+        scrollPane.setBounds(15, 44, 300, 310);
         panel.add(scrollPane);     //테이블 만들기
        
         //주문한 메뉴 테이블에 담기
@@ -103,21 +107,21 @@ public class UIMenuOrder extends JPanel {
         });
 		
 		//결제 버튼
+		UIPaymentConfirm frame = new UIPaymentConfirm(selectedTable, res, tableN,this);
 		JButton btnNewButton_7_1_2 = new JButton("결제");
 		btnNewButton_7_1_2.setBounds(15, 474, 300, 74);
 		panel.add(btnNewButton_7_1_2);
 		btnNewButton_7_1_2.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton_7_1_2.addActionListener( new ActionListener() {
-            @Override
+            
+			@Override
             public void actionPerformed(ActionEvent e) {
-            	UIPaymentConfirm frame = new UIPaymentConfirm(tables.get(tableN).getTotal());
-				frame.setVisible(true);
-            	res.pay(tableN);
-            	
-            	UISales sales=new UISales(res);
-            	showNext(sales);  //'판매 모드' 패널로 이동
+				
+		        frame.setVisible(true);
+				
             }
         });
+		
 		
 		//이전 화면 버튼
 		JButton btnNewButton_7_1_1 = new JButton("이전 화면");
@@ -158,6 +162,11 @@ public class UIMenuOrder extends JPanel {
 		btnNewButton_7_1_1_1.setFont(new Font("굴림", Font.PLAIN, 20));
 		btnNewButton_7_1_1_1.setBounds(170, 558, 145, 33);
 		panel.add(btnNewButton_7_1_1_1);
+		
+		JLabel lblNewLabel = new JLabel(""+selectedTable.getTableName());
+		lblNewLabel.setFont(new Font("굴림", Font.PLAIN, 16));
+		lblNewLabel.setBounds(15, 10, 300, 24);
+		panel.add(lblNewLabel);
 		
 		
 		
@@ -254,7 +263,7 @@ public class UIMenuOrder extends JPanel {
         }
     }
 	//다음 화면으로 이동하는 함수
-	private void showNext(Component ob) {
+	public void showNext(Component ob) {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         frame.getContentPane().remove(this);
         frame.getContentPane().add(ob);
@@ -262,5 +271,12 @@ public class UIMenuOrder extends JPanel {
         frame.repaint();
     
 
+	}
+	public void pay(int tableN) {
+		if(res.getTables().get(tableN).getAvailable()) {
+			UISales sales=new UISales(res);
+			showNext(sales);
+		}
+		
 	}
 }

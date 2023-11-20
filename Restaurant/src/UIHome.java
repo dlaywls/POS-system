@@ -185,7 +185,7 @@ public class UIHome extends JPanel implements Serializable{
 		}
 	
 	//다음 패널로 이동하는 함수
-	private void showNext(Component ob) {
+	public void showNext(Component ob) {
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         frame.getContentPane().remove(this);
         frame.getContentPane().add(ob);
